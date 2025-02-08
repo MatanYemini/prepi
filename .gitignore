@@ -169,3 +169,9 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# My venv is prepi named (so I will know it)
+prepi/
+.prepi/
+.prepi
+prepi
