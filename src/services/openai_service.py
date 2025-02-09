@@ -8,8 +8,17 @@ import asyncio
 from config.settings import LOG_EVENT_TYPES, OPENAI_API_KEY, VOICE, SYSTEM_MESSAGE, SHOW_TIMING_MATH, MAX_CALL_DURATION
 from utils.websocket_handlers import WebSocketState, handle_speech_started_event, send_mark
 
-async def initialize_session(openai_ws):
+async def initialize_session(openai_ws, personality: str = '', instructions: str = ''):
     """Control initial session with OpenAI."""
+    # Combine system message with personality and additional instructions
+    combined_instructions = SYSTEM_MESSAGE
+    
+    if personality:
+        combined_instructions += f"\n\nAdopt this personality: {personality}"
+    
+    if instructions:
+        combined_instructions += f"\n\nAdditional instructions: {instructions}"
+
     session_update = {
         "type": "session.update",
         "session": {
@@ -17,7 +26,7 @@ async def initialize_session(openai_ws):
             "input_audio_format": "g711_ulaw",
             "output_audio_format": "g711_ulaw",
             "voice": VOICE,
-            "instructions": SYSTEM_MESSAGE,
+            "instructions": combined_instructions,
             "modalities": ["text", "audio"],
             "temperature": 0.8,
         }
@@ -46,6 +55,15 @@ async def send_initial_conversation_item(openai_ws):
 
 async def handle_media_stream(websocket: WebSocket):
     """Handle WebSocket connections between Twilio and OpenAI."""
+    
+    # For testing purposes, we'll use the enriched_profile_response file as the personality
+    try:
+        with open('enriched_profile_response', 'r') as f:
+            personality = f.read().strip()
+    except FileNotFoundError:
+        print("Warning: enriched_profile_response file not found, using empty personality")
+        personality = ''
+        
     print("Client connected")
     await websocket.accept()
 
@@ -56,7 +74,7 @@ async def handle_media_stream(websocket: WebSocket):
             "OpenAI-Beta": "realtime=v1"
         }
     ) as openai_ws:
-        await initialize_session(openai_ws)
+        await initialize_session(openai_ws, personality)
         
         # Initialize WebSocket state
         ws_state = WebSocketState()
