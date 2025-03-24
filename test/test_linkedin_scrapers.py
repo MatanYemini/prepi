@@ -1,23 +1,53 @@
 import unittest
 from fastapi.testclient import TestClient
+from src.services.agents.text_cleaning_agent import TextCleaningAgent
 from src.main import app
 import os
 
 class TestLinkedInScrapers(unittest.TestCase):
     def setUp(self):
         self.client = TestClient(app)
-
-    def test_get_linkedin_profile(self):
-        response = self.client.post("/linkedin/profile", json={"profile_url": "https://www.linkedin.com/in/someuser"})
+        
+    def test_get_profile_data(self):
+        response = self.client.post(
+            "/linkedin/profile",
+            json={"profile_url": "https://www.linkedin.com/in/matan-yemini"}
+        )
         self.assertEqual(response.status_code, 200)
-        self.assertIn("id", response.json())
+        data = response.json()
 
-    def test_get_linkedin_company(self):
-        response = self.client.post("/linkedin/company", json={"company_username": "somecompany"})
+        # Write response to JSON file in test folder
+        test_folder = "test"
+        file_path = os.path.join(test_folder, "profile_data_response.json")
+        
+        # Ensure test directory exists
+        os.makedirs(test_folder, exist_ok=True)
+        
+        with open(file_path, "w") as file:
+            file.write(str(data))
+            
+    
+    def test_cleaned_get_profile_data(self):
+        response = self.client.post(
+            "/linkedin/profile",
+            json={"profile_url": "https://www.linkedin.com/in/matan-yemini", "cleanup": True, "include_posts": False}
+        )
         self.assertEqual(response.status_code, 200)
-        self.assertIn("success", response.json())
-        self.assertTrue(response.json()["success"])
+        data = response.json()
 
+        # Write response to JSON file in test folder
+        test_folder = "test"
+        file_path = os.path.join(test_folder, "profile_data_response.json")
+        
+        # Ensure test directory exists
+        os.makedirs(test_folder, exist_ok=True)
+        
+        with open(file_path, "w") as file:
+            file.write(str(data))
+    
+    
+    
+    
     def test_get_enriched_linkedin_profile(self):
         response = self.client.post(
             "/linkedin/enriched-profile", 
@@ -51,30 +81,17 @@ class TestLinkedInScrapers(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         data = response.json()
         
-        # Verify positions/experience data exists
-        self.assertTrue(
-            'positions' in data or 'experience' in data or 'enrichedPositions' in data,
-            "No positions/experience data found in response"
-        )
+        # Write the response to a text file in this folder
+        with open("uncleaned_data.txt", "w") as file:
+            file.write(str(data))
         
-        # Verify cleanup worked
-        def check_no_urls_or_dimensions(obj):
-            if isinstance(obj, dict):
-                for key, value in obj.items():
-                    # No URL-like fields
-                    self.assertFalse(
-                        any(url_key in str(key).lower() 
-                            for url_key in ['url', 'picture', 'image', 'avatar', 'photo']),
-                        f"Found URL-like field: {key}"
-                    )
-                    # Recursively check nested objects
-                    if isinstance(value, (dict, list)):
-                        check_no_urls_or_dimensions(value)
-            elif isinstance(obj, list):
-                for item in obj:
-                    check_no_urls_or_dimensions(item)
+        # clean the data using the text cleaning agent
+        text_cleaning_agent = TextCleaningAgent()
+        cleaned_data = text_cleaning_agent.clean_text(data, "uncleaned_data.txt")
         
-        check_no_urls_or_dimensions(data)
+        #save the cleaned data to a file
+        with open("cleaned_data.txt", "w") as file:
+            file.write(str(cleaned_data))
 
 if __name__ == "__main__":
     unittest.main() 

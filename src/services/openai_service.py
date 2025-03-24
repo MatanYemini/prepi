@@ -4,20 +4,21 @@ import websockets
 from fastapi import WebSocket
 from fastapi.websockets import WebSocketDisconnect
 import asyncio
+import aiofiles
 
-from config.settings import LOG_EVENT_TYPES, OPENAI_API_KEY, VOICE, SYSTEM_MESSAGE, SHOW_TIMING_MATH, MAX_CALL_DURATION
+from config.settings import LOG_EVENT_TYPES, OPENAI_API_KEY, VOICE, INITIAL_SESSION_SYSTEM_MESSAGE, SHOW_TIMING_MATH, MAX_CALL_DURATION
 from utils.websocket_handlers import WebSocketState, handle_speech_started_event, send_mark
 
-async def initialize_session(openai_ws, personality: str = '', instructions: str = ''):
+async def initialize_session(openai_ws, linkedin_profile_details: str = '', type_of_call: str = ''):
     """Control initial session with OpenAI."""
     # Combine system message with personality and additional instructions
-    combined_instructions = SYSTEM_MESSAGE
+    combined_instructions = INITIAL_SESSION_SYSTEM_MESSAGE
     
-    if personality:
-        combined_instructions += f"\n\nAdopt this personality: {personality}"
+    if linkedin_profile_details:
+        combined_instructions += f"\n\nThis is the LinkedIn profile details: {linkedin_profile_details}"
     
-    if instructions:
-        combined_instructions += f"\n\nAdditional instructions: {instructions}"
+        
+    print('Combined instructions:', combined_instructions)
 
     session_update = {
         "type": "session.update",
@@ -33,19 +34,31 @@ async def initialize_session(openai_ws, personality: str = '', instructions: str
     }
     print('Sending session update:', json.dumps(session_update))
     await openai_ws.send(json.dumps(session_update))
-    await send_initial_conversation_item(openai_ws)
+    await send_initial_conversation_item(openai_ws, type_of_call)
 
-async def send_initial_conversation_item(openai_ws):
+async def send_initial_conversation_item(openai_ws, type_of_call = "sales"):
     """Send initial conversation item if AI talks first."""
+    
+    first_message = "Generate a greeting for the user based on the person information that has been provided. Do it very short like a real person would do. Without 'how can I help you today?' or 'how can I assist you today?' you are a person, not a bot."
+    
+    if type_of_call == 'hiring_manager':
+        first_message += "\nYou are the hiring manager for this call. You are trying to hire the user for a job. Be professional, and consice. Use the information provided to you to make a good impression"
+        first_message += "\nIMPORTANT: You are the hiring manager for this call. You are trying to hire the user for a job. Be professional, and consice"
+        first_message += "\nGreat the user like a hiring manager would do, and ask them if they are interested in the job, and why they are interested in the job"
+    elif type_of_call == 'sales':
+        first_message += "\nYou are a decision maker for this call, someone is trying to sell you something. Be professional, and consice. Use the information provided to you to make a good impression"
+        first_message += "\nIMPORTANT: You should represent your company for this call. Dig inside the caller product to understand if it fits your company"
+    
+
     initial_conversation_item = {
         "type": "conversation.item.create",
         "item": {
             "type": "message",
-            "role": "user",
+            "role": "system",
             "content": [
                 {
                     "type": "input_text",
-                    "text": "Greet the user with: 'Hey there! I hope you're having an amazing day! I just wanted to check in and see if there's anything I can do to help you'"
+                    "text": first_message
                 }
             ]
         }
@@ -56,13 +69,14 @@ async def send_initial_conversation_item(openai_ws):
 async def handle_media_stream(websocket: WebSocket):
     """Handle WebSocket connections between Twilio and OpenAI."""
     
-    # For testing purposes, we'll use the enriched_profile_response file as the personality
+    # For testing purposes, we'll use the enriched_profile_response file as the linkedin_profile_details
     try:
-        with open('enriched_profile_response', 'r') as f:
-            personality = f.read().strip()
+        async with aiofiles.open('test/profile_data_response.json', 'r') as f:
+            linkedin_profile_details = await f.read()
+            linkedin_profile_details = linkedin_profile_details.strip()
     except FileNotFoundError:
         print("Warning: enriched_profile_response file not found, using empty personality")
-        personality = ''
+        linkedin_profile_details = ''
         
     print("Client connected")
     await websocket.accept()
@@ -74,7 +88,7 @@ async def handle_media_stream(websocket: WebSocket):
             "OpenAI-Beta": "realtime=v1"
         }
     ) as openai_ws:
-        await initialize_session(openai_ws, personality)
+        await initialize_session(openai_ws, linkedin_profile_details, "hiring_manager")
         
         # Initialize WebSocket state
         ws_state = WebSocketState()

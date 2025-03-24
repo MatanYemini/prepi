@@ -1,0 +1,55 @@
+** Get Profile with Posts **
+import http.client
+
+conn = http.client.HTTPSConnection("linkedin-data-api.p.rapidapi.com")
+
+headers = {
+    'x-rapidapi-key': "6eecce424dmsh877f143626062c3p10ca58jsnd1505c21ced4",
+    'x-rapidapi-host': "linkedin-data-api.p.rapidapi.com"
+}
+
+conn.request("GET", "/profile-data-connection-count-posts?username=adamselipsky", headers=headers)
+
+res = conn.getresponse()
+data = res.read()
+
+print(data.decode("utf-8"))
+
+
+
+** Get Posts by Profile username **
+
+import http.client
+
+conn = http.client.HTTPSConnection("linkedin-data-api.p.rapidapi.com")
+
+headers = {
+    'x-rapidapi-key': "6eecce424dmsh877f143626062c3p10ca58jsnd1505c21ced4",
+    'x-rapidapi-host': "linkedin-data-api.p.rapidapi.com"
+}
+
+conn.request("GET", "/get-profile-posts?username=adamselipsky", headers=headers)
+
+res = conn.getresponse()
+data = res.read()
+
+print(data.decode("utf-8"))
+
+
+** Get Company Posts by Company username **
+
+import http.client
+
+conn = http.client.HTTPSConnection("linkedin-data-api.p.rapidapi.com")
+
+headers = {
+    'x-rapidapi-key': "6eecce424dmsh877f143626062c3p10ca58jsnd1505c21ced4",
+    'x-rapidapi-host': "linkedin-data-api.p.rapidapi.com"
+}
+
+conn.request("GET", "/get-company-posts?username=microsoft&start=0", headers=headers)
+
+res = conn.getresponse()
+data = res.read()
+
+print(data.decode("utf-8"))

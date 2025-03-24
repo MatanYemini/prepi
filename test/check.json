@@ -1,0 +1,300 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "username": {
+      "type": "string"
+    },
+    "firstName": {
+      "type": "string"
+    },
+    "lastName": {
+      "type": "string"
+    },
+    "isTopVoice": {
+      "type": "boolean"
+    },
+    "isCreator": {
+      "type": "boolean"
+    },
+    "isPremium": {
+      "type": "boolean"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "headline": {
+      "type": "string"
+    },
+    "geo": {
+      "type": "object",
+      "properties": {
+        "country": {
+          "type": "string"
+        },
+        "city": {
+          "type": "string"
+        },
+        "full": {
+          "type": "string"
+        }
+      }
+    },
+    "educations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "start": {
+            "type": "object",
+            "properties": {
+              "year": {
+                "type": "integer"
+              },
+              "month": {
+                "type": "integer"
+              },
+              "day": {
+                "type": "integer"
+              }
+            }
+          },
+          "end": {
+            "type": "object",
+            "properties": {
+              "year": {
+                "type": "integer"
+              },
+              "month": {
+                "type": "integer"
+              },
+              "day": {
+                "type": "integer"
+              }
+            }
+          },
+          "fieldOfStudy": {
+            "type": "string"
+          },
+          "degree": {
+            "type": "string"
+          },
+          "grade": {
+            "type": "string"
+          },
+          "schoolName": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "activities": {
+            "type": "string"
+          },
+          "schoolId": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "position": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "companyId": {
+            "type": "integer"
+          },
+          "companyName": {
+            "type": "string"
+          },
+          "companyUsername": {
+            "type": "string"
+          },
+          "companyIndustry": {
+            "type": "string"
+          },
+          "companyStaffCountRange": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "employmentType": {
+            "type": "string"
+          },
+          "start": {
+            "type": "object",
+            "properties": {
+              "year": {
+                "type": "integer"
+              },
+              "month": {
+                "type": "integer"
+              },
+              "day": {
+                "type": "integer"
+              }
+            }
+          },
+          "end": {
+            "type": "object",
+            "properties": {
+              "year": {
+                "type": "integer"
+              },
+              "month": {
+                "type": "integer"
+              },
+              "day": {
+                "type": "integer"
+              }
+            }
+          }
+        }
+      }
+    },
+    "fullPositions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "companyId": {
+            "type": "integer"
+          },
+          "companyName": {
+            "type": "string"
+          },
+          "companyUsername": {
+            "type": "string"
+          },
+          "companyIndustry": {
+            "type": "string"
+          },
+          "companyStaffCountRange": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "multiLocaleTitle": {
+            "type": "object",
+            "properties": {
+              "en_US": {
+                "type": "string"
+              }
+            }
+          },
+          "multiLocaleCompanyName": {
+            "type": "object",
+            "properties": {
+              "en_US": {
+                "type": "string"
+              }
+            }
+          },
+          "location": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "employmentType": {
+            "type": "string"
+          },
+          "start": {
+            "type": "object",
+            "properties": {
+              "year": {
+                "type": "integer"
+              },
+              "month": {
+                "type": "integer"
+              },
+              "day": {
+                "type": "integer"
+              }
+            }
+          },
+          "end": {
+            "type": "object",
+            "properties": {
+              "year": {
+                "type": "integer"
+              },
+              "month": {
+                "type": "integer"
+              },
+              "day": {
+                "type": "integer"
+              }
+            }
+          }
+        }
+      }
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "endorsementsCount": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "projects": {
+      "type": "object"
+    },
+    "supportedLocales": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "country": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "multiLocaleFirstName": {
+      "type": "object",
+      "properties": {
+        "en": {
+          "type": "string"
+        }
+      }
+    },
+    "multiLocaleLastName": {
+      "type": "object",
+      "properties": {
+        "en": {
+          "type": "string"
+        }
+      }
+    },
+    "multiLocaleHeadline": {
+      "type": "object",
+      "properties": {
+        "en": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
